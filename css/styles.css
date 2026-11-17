@@ -1,0 +1,270 @@
+/* styles.css
+   -----------------------------------------------------------------------------
+   Basic styling for ShiftSync. All colors live in the variables below, so the
+   full theme can be polished later by editing them in one place.
+   ----------------------------------------------------------------------------- */
+
+:root {
+  --color-page-bg: #f4f7fb;
+  --color-card-bg: #ffffff;
+  --color-text: #1b2a41;
+  --color-text-muted: #5b6b82;
+  --color-border: #dde4ee;
+  --color-brand: #3b9ae1;
+
+  /* Schedule colors: green ONLY for preferred, red ONLY for conflicts */
+  --color-free: #f1f4f8;
+  --color-preferred: #2fa463;
+  --color-conflict: #d64545;
+
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--color-page-bg);
+  color: var(--color-text);
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.page-header h1 {
+  margin: 0 0 4px;
+}
+
+.page-header p {
+  margin: 0 0 20px;
+  color: var(--color-text-muted);
+}
+
+.card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+/* ---------- Layout: side panel + grid ---------- */
+
+.availability-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.side-panel h2 {
+  font-size: 0.95rem;
+  margin: 0 0 8px;
+}
+
+.side-panel h2:not(:first-child) {
+  margin-top: 20px;
+}
+
+/* ---------- Mode toggle ---------- */
+
+.mode-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mode-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: white;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.mode-button.active {
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 2px var(--color-brand) inset;
+  font-weight: 600;
+}
+
+/* ---------- Legend ---------- */
+
+.legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.swatch {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+}
+
+.swatch-preferred {
+  background: var(--color-preferred);
+}
+
+.swatch-free {
+  background: var(--color-free);
+}
+
+/* Conflicts use stripes, not just color, so they're clear for everyone */
+.swatch-conflict,
+.slot[data-state="conflict"] {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-conflict),
+    var(--color-conflict) 4px,
+    #b83434 4px,
+    #b83434 8px
+  );
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.button {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.button-secondary {
+  background: white;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+/* ---------- The weekly grid ---------- */
+
+.grid-card {
+  overflow-x: auto; /* on narrow screens, the grid can scroll sideways */
+}
+
+.grid {
+  display: grid;
+  /* one column for the time labels, then one per day */
+  grid-template-columns: 4.5rem repeat(var(--day-count), minmax(2.5rem, 1fr));
+  gap: 2px;
+  user-select: none;
+  /* On touch screens: an up/down swipe scrolls the page as normal,
+     while a left/right drag paints across the days. */
+  touch-action: pan-y;
+}
+
+.grid-day {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding-bottom: 6px;
+}
+
+.day-short {
+  display: none;
+}
+
+.grid-time {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-align: right;
+  padding-right: 8px;
+  white-space: nowrap;
+  transform: translateY(-0.5em); /* line the label up with the hour line */
+}
+
+.slot {
+  height: 22px;
+  border: none;
+  border-radius: 3px;
+  background: var(--color-free);
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.slot.on-the-hour {
+  box-shadow: inset 0 1px 0 var(--color-border);
+}
+
+.slot:hover {
+  filter: brightness(0.95);
+}
+
+.slot:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 1px;
+}
+
+.slot[data-state="preferred"] {
+  background: var(--color-preferred);
+}
+
+/* A small ✕ on conflict slots, in addition to the stripes */
+.slot[data-state="conflict"]::after {
+  content: "✕";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 760px) {
+  .availability-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .day-long {
+    display: none;
+  }
+
+  .day-short {
+    display: inline;
+  }
+
+  .grid {
+    grid-template-columns: 3.6rem repeat(var(--day-count), minmax(2rem, 1fr));
+  }
+
+  .grid-time {
+    font-size: 0.68rem;
+    padding-right: 4px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+}

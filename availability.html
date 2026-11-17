@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Availability · ShiftSync</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <h1>My availability</h1>
+      <p>Pick a mode, then click or drag across the grid to mark your week.</p>
+    </header>
+
+    <div class="availability-layout">
+      <!-- Side panel: mode toggle, legend, and buttons -->
+      <aside class="card side-panel">
+        <h2>Paint mode</h2>
+        <div class="mode-toggle" role="group" aria-label="Paint mode">
+          <button type="button" class="mode-button" data-mode="preferred">
+            <span class="swatch swatch-preferred" aria-hidden="true"></span>
+            Preferred
+          </button>
+          <button type="button" class="mode-button" data-mode="conflict">
+            <span class="swatch swatch-conflict" aria-hidden="true"></span>
+            Definite conflict
+          </button>
+        </div>
+
+        <h2>Legend</h2>
+        <ul class="legend">
+          <li><span class="swatch swatch-preferred" aria-hidden="true"></span> Preferred time</li>
+          <li><span class="swatch swatch-conflict" aria-hidden="true"></span> Definite conflict (can't work)</li>
+          <li><span class="swatch swatch-free" aria-hidden="true"></span> Free, can work if needed</li>
+        </ul>
+
+        <p class="hint">Tip: click a colored slot again to clear it.</p>
+
+        <button type="button" id="clear-all" class="button button-secondary">Clear all</button>
+      </aside>
+
+      <!-- The weekly grid is drawn here by js/grid.js -->
+      <section class="card grid-card">
+        <div id="availability-grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- type="module" lets our JS files import from each other -->
+  <script type="module" src="js/availability.js"></script>
+</body>
+</html>
