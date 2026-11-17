@@ -6,6 +6,11 @@
 
 import { scheduleSettings, SLOT_STATES } from "./config.js";
 import { createGrid } from "./grid.js";
+import { isFirebaseConfigured } from "./firebase.js";
+import { loadAvailability, saveAvailability } from "./database.js";
+
+// TEMPORARY: until login is added in Step 3, everyone saves to this test user.
+const userId = "test-user";
 
 // ---- Page state ----
 
@@ -20,10 +25,15 @@ let availability = {};
 // It's null when nobody is dragging.
 let dragState = null;
 
+// True when there are changes that haven't been saved yet.
+let hasUnsavedChanges = false;
+
 // ---- Find the elements on the page ----
 const gridContainer = document.getElementById("availability-grid");
 const modeButtons = document.querySelectorAll("[data-mode]");
 const clearButton = document.getElementById("clear-all");
+const saveButton = document.getElementById("save");
+const statusMessage = document.getElementById("save-status");
 
 // Draw the grid and keep a lookup of slot id -> slot button.
 const slots = createGrid(gridContainer, scheduleSettings);
@@ -33,6 +43,20 @@ const slots = createGrid(gridContainer, scheduleSettings);
 // Get a slot's current state ("free" if it isn't stored).
 function getState(key) {
   return availability[key] || SLOT_STATES.FREE;
+}
+
+// Show a short message under the Save button. `type` picks the color.
+function showStatus(text, type = "") {
+  statusMessage.textContent = text;
+  statusMessage.dataset.type = type;
+}
+
+// Remember that something changed, so we can remind the user to save.
+function markUnsaved() {
+  if (!hasUnsavedChanges) {
+    hasUnsavedChanges = true;
+    showStatus("You have unsaved changes.", "warning");
+  }
 }
 
 // Change one slot's state, both in our data and on screen.
@@ -72,6 +96,7 @@ gridContainer.addEventListener("pointerdown", (event) => {
   // The first slot decides what the whole drag does: paint or erase.
   dragState = stateAfterClick(slot.dataset.key);
   setState(slot.dataset.key, dragState);
+  markUnsaved();
 });
 
 gridContainer.addEventListener("pointermove", (event) => {
@@ -79,6 +104,7 @@ gridContainer.addEventListener("pointermove", (event) => {
   const slot = slotAtPoint(event.clientX, event.clientY);
   if (slot && getState(slot.dataset.key) !== dragState) {
     setState(slot.dataset.key, dragState);
+    markUnsaved();
   }
 });
 
@@ -96,6 +122,7 @@ gridContainer.addEventListener("click", (event) => {
   const slot = event.target.closest(".slot");
   if (!slot || event.detail !== 0) return;
   setState(slot.dataset.key, stateAfterClick(slot.dataset.key));
+  markUnsaved();
 });
 
 // ---- Mode toggle (Preferred / Definite conflict) ----
@@ -120,10 +147,59 @@ clearButton.addEventListener("click", () => {
   for (const key of slots.keys()) {
     setState(key, SLOT_STATES.FREE);
   }
+  markUnsaved();
 });
 
-// ---- Start: every slot begins as free (gray) ----
-for (const key of slots.keys()) {
-  setState(key, SLOT_STATES.FREE);
+// ---- Save ----
+
+saveButton.addEventListener("click", async () => {
+  saveButton.disabled = true;
+  showStatus("Saving…");
+  try {
+    await saveAvailability(userId, availability);
+    hasUnsavedChanges = false;
+    showStatus("Saved ✓", "success");
+  } catch (error) {
+    console.error(error);
+    showStatus("Couldn't save. Check your connection and try again.", "error");
+  } finally {
+    saveButton.disabled = false;
+  }
+});
+
+// Warn before leaving the page if there are unsaved changes.
+window.addEventListener("beforeunload", (event) => {
+  if (hasUnsavedChanges) event.preventDefault();
+});
+
+// ---- Start up ----
+
+// Show the saved slots on the grid (anything not saved stays gray).
+function showOnGrid(savedSlots) {
+  for (const key of slots.keys()) {
+    // Ignore saved slots that no longer exist (e.g. if the hours in config.js changed).
+    setState(key, savedSlots[key] || SLOT_STATES.FREE);
+  }
 }
-setMode(SLOT_STATES.PREFERRED);
+
+async function start() {
+  setMode(SLOT_STATES.PREFERRED);
+  showOnGrid({});
+
+  if (!isFirebaseConfigured) {
+    saveButton.disabled = true;
+    showStatus("Firebase isn't set up yet. Add your config to js/firebase.js.", "error");
+    return;
+  }
+
+  showStatus("Loading your availability…");
+  try {
+    showOnGrid(await loadAvailability(userId));
+    showStatus("");
+  } catch (error) {
+    console.error(error);
+    showStatus("Couldn't load your saved availability.", "error");
+  }
+}
+
+start();

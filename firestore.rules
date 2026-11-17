@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// Firestore security rules: they decide who can read and write what.
+// The database refuses anything not allowed here, even if someone edits our JavaScript.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // TEMPORARY (Step 2): only the shared "test-user" document can be used,
+    // so we can test saving before login exists. Step 3 replaces this with
+    // real per-user rules.
+    match /availability/test-user {
+      allow read, write: if true;
+    }
+  }
+}

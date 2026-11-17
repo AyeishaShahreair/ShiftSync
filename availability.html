@@ -37,7 +37,12 @@
 
         <p class="hint">Tip: click a colored slot again to clear it.</p>
 
-        <button type="button" id="clear-all" class="button button-secondary">Clear all</button>
+        <div class="actions">
+          <button type="button" id="save" class="button button-primary">Save availability</button>
+          <button type="button" id="clear-all" class="button button-secondary">Clear all</button>
+          <!-- aria-live makes screen readers announce messages like "Saved ✓" -->
+          <p id="save-status" class="status" aria-live="polite"></p>
+        </div>
       </aside>
 
       <!-- The weekly grid is drawn here by js/grid.js -->
