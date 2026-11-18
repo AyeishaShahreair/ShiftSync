@@ -1,24 +1,67 @@
 /* styles.css
    -----------------------------------------------------------------------------
-   Basic styling for ShiftSync. All colors live in the variables below, so the
-   full theme can be polished later by editing them in one place.
+   All styling for ShiftSync.
+
+   Sections:
+     1. Theme (colors, fonts, shadows) - change the look here
+     2. Base page styles
+     3. Buttons, links, and status messages
+     4. Top navigation bar and footer
+     5. Page layout and side panel
+     6. The weekly grid (shared by both grid pages)
+     7. Employee availability page
+     8. Admin Team overview (heatmap)
+     9. Login page
+    10. Phones and small screens
+    11. Reduced motion
    ----------------------------------------------------------------------------- */
 
+/* ============================== 1. Theme ============================== */
+
 :root {
-  --color-page-bg: #f4f7fb;
+  /* Brand: calm sky blue */
+  --color-brand: #1f78c1;        /* buttons, links, active states (passes contrast with white text) */
+  --color-brand-hover: #18649f;
+  --color-brand-light: #e7f2fc;  /* soft blue backgrounds */
+  --color-brand-sky: #7cc0f0;    /* decorative accents */
+
+  /* Text and surfaces */
+  --color-heading: #0b2545;      /* deep navy for headings */
+  --color-text: #1b3355;         /* navy body text */
+  --color-text-muted: #55698a;
+  --color-page-bg: #f2f6fb;      /* very soft blue-gray */
   --color-card-bg: #ffffff;
-  --color-text: #1b2a41;
-  --color-text-muted: #5b6b82;
-  --color-border: #dde4ee;
-  --color-brand: #3b9ae1;
+  --color-border: #dbe5f0;
 
   /* Schedule colors: green ONLY for preferred, red ONLY for conflicts */
-  --color-free: #f1f4f8;
+  --color-free: #eef2f7;
+  --color-free-hover: #dfe7f1;
   --color-preferred: #2fa463;
   --color-conflict: #d64545;
+  --color-conflict-dark: #b83434;
 
-  --radius: 10px;
+  /* Heatmap greens, from "a few people" (1) to "everyone" (4) */
+  --heat-1: #d9f2e3;
+  --heat-2: #9fd8b5;
+  --heat-3: #2f9a5e;
+  --heat-4: #17603a;
+
+  /* Status message colors */
+  --color-success: #1d7a45;
+  --color-warning: #8a5a00;
+  --color-error: #b42318;
+
+  /* Shape and depth */
+  --radius: 14px;
+  --radius-small: 10px;
+  --shadow-card: 0 1px 2px rgba(11, 37, 69, 0.05), 0 6px 20px rgba(11, 37, 69, 0.06);
+  --shadow-raised: 0 10px 30px rgba(11, 37, 69, 0.14);
+  --transition: 0.18s ease;
+
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
+
+/* ============================== 2. Base ============================== */
 
 * {
   box-sizing: border-box;
@@ -26,31 +69,23 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column; /* keeps the footer at the bottom of short pages */
+  font-family: var(--font);
   background: var(--color-page-bg);
   color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
 }
 
-.page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 16px;
+main {
+  flex: 1;
 }
 
-.page-header h1 {
-  margin: 0 0 4px;
-}
-
-.page-header p {
-  margin: 0 0 20px;
-  color: var(--color-text-muted);
-}
-
-.card {
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 16px;
+h1,
+h2 {
+  color: var(--color-heading);
+  letter-spacing: -0.02em;
 }
 
 /* Hide logged-in pages until js/auth.js confirms who is logged in */
@@ -58,172 +93,59 @@ body.checking-login main {
   visibility: hidden;
 }
 
-/* ---------- Top navigation bar ---------- */
-
-.top-nav {
-  background: var(--color-card-bg);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.nav-inner {
+.page {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
+  padding: 32px 16px;
 }
 
-.nav-logo {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--color-brand);
-  text-decoration: none;
+.page-header h1 {
+  margin: 0 0 6px;
+  font-size: 1.9rem;
 }
 
-.nav-links {
-  display: flex;
-  gap: 4px;
-  flex: 1;
-}
-
-.nav-link {
-  padding: 6px 10px;
-  border-radius: 6px;
-  color: var(--color-text-muted);
-  text-decoration: none;
-  font-size: 0.95rem;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  color: var(--color-text);
-  background: var(--color-page-bg);
-}
-
-.nav-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.nav-name {
-  white-space: nowrap;
-  font-size: 0.9rem;
+.page-header p {
+  margin: 0 0 24px;
   color: var(--color-text-muted);
 }
 
-.nav-logout {
-  width: auto;
-  padding: 6px 12px;
-}
-
-/* ---------- Layout: side panel + grid ---------- */
-
-.availability-layout {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 16px;
-  align-items: start;
-}
-
-.side-panel h2 {
-  font-size: 0.95rem;
-  margin: 0 0 8px;
-}
-
-.side-panel h2:not(:first-child) {
-  margin-top: 20px;
-}
-
-/* ---------- Mode toggle ---------- */
-
-.mode-toggle {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.mode-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
+.card {
+  background: var(--color-card-bg);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: white;
-  color: var(--color-text);
-  font: inherit;
-  cursor: pointer;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 20px;
 }
 
-.mode-button.active {
-  border-color: var(--color-brand);
-  box-shadow: 0 0 0 2px var(--color-brand) inset;
-  font-weight: 600;
-}
-
-/* ---------- Legend ---------- */
-
-.legend {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 6px;
-  font-size: 0.9rem;
-}
-
-.legend li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.swatch {
-  display: inline-block;
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  border: 1px solid var(--color-border);
-}
-
-.swatch-preferred {
-  background: var(--color-preferred);
-}
-
-.swatch-free {
-  background: var(--color-free);
-}
-
-/* Conflicts use stripes, not just color, so they're clear for everyone */
-.swatch-conflict,
-.slot[data-state="conflict"] {
-  background: repeating-linear-gradient(
-    45deg,
-    var(--color-conflict),
-    var(--color-conflict) 4px,
-    #b83434 4px,
-    #b83434 8px
-  );
-}
-
-.hint {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-}
+/* ===================== 3. Buttons, links, messages ===================== */
 
 .button {
   width: 100%;
-  padding: 9px 12px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-small);
   font: inherit;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition),
+    box-shadow var(--transition), transform var(--transition);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:focus-visible,
+.link-button:focus-visible,
+.nav-link:focus-visible,
+.nav-logo:focus-visible,
+.mode-button:focus-visible {
+  outline: 3px solid var(--color-brand-sky);
+  outline-offset: 2px;
 }
 
 .button:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -231,12 +153,42 @@ body.checking-login main {
   background: var(--color-brand);
   border: 1px solid var(--color-brand);
   color: white;
-  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(31, 120, 193, 0.25);
 }
 
-.actions {
-  display: grid;
-  gap: 8px;
+.button-primary:hover:not(:disabled) {
+  background: var(--color-brand-hover);
+  box-shadow: 0 4px 12px rgba(31, 120, 193, 0.3);
+}
+
+.button-secondary {
+  background: white;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.button-secondary:hover:not(:disabled) {
+  border-color: var(--color-brand-sky);
+  background: var(--color-brand-light);
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-brand);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  justify-self: start;
+  border-radius: 4px;
+}
+
+.link-button:hover {
+  color: var(--color-brand-hover);
 }
 
 .status {
@@ -246,25 +198,213 @@ body.checking-login main {
   color: var(--color-text-muted);
 }
 
-.status[data-type="success"] {
-  color: #1d7a45;
+.status:empty {
+  display: none;
 }
 
-.status[data-type="warning"] {
-  color: #8a5a00;
+.status[data-type="success"] { color: var(--color-success); }
+.status[data-type="warning"] { color: var(--color-warning); }
+.status[data-type="error"] { color: var(--color-error); }
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
 }
 
-.status[data-type="error"] {
-  color: #b42318;
-}
+/* ===================== 4. Navigation bar and footer ===================== */
 
-.button-secondary {
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 5;
   background: white;
-  border: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 8px rgba(11, 37, 69, 0.04);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-logo,
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  color: var(--color-heading);
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-link {
+  padding: 7px 12px;
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.nav-link:hover {
+  color: var(--color-heading);
+  background: var(--color-page-bg);
+}
+
+.nav-link.active {
+  color: var(--color-brand);
+  background: var(--color-brand-light);
+  font-weight: 600;
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Circle with the user's initials */
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-brand-light);
+  color: var(--color-brand);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.nav-name {
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 500;
   color: var(--color-text);
 }
 
-/* ---------- The weekly grid ---------- */
+.nav-logout {
+  width: auto;
+  padding: 7px 14px;
+  margin-left: 6px;
+}
+
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  background: white;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.footer-summary {
+  max-width: 520px;
+  margin: 0 auto 6px !important;
+}
+
+.footer-credit strong {
+  color: var(--color-heading);
+  font-weight: 600;
+}
+
+.site-footer a {
+  color: var(--color-brand);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ===================== 5. Page layout and side panel ===================== */
+
+.availability-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* On tall screens, the side panel stays in view while scrolling the grid */
+@media (min-height: 900px) and (min-width: 761px) {
+  .side-panel {
+    position: sticky;
+    top: 76px; /* just under the nav bar */
+  }
+}
+
+.side-panel h2 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin: 0 0 10px;
+}
+
+.side-panel h2:not(:first-child) {
+  margin-top: 24px;
+}
+
+.legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.swatch {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 1px solid var(--color-border);
+}
+
+.swatch-preferred {
+  background: var(--color-preferred);
+  border-color: var(--color-preferred);
+}
+
+.swatch-free {
+  background: var(--color-free);
+}
+
+/* ===================== 6. The weekly grid ===================== */
 
 .grid-card {
   overflow-x: auto; /* on narrow screens, the grid can scroll sideways */
@@ -274,7 +414,7 @@ body.checking-login main {
   display: grid;
   /* one column for the time labels, then one per day */
   grid-template-columns: 4.5rem repeat(var(--day-count), minmax(2.5rem, 1fr));
-  gap: 2px;
+  gap: 3px;
   user-select: none;
   /* On touch screens: an up/down swipe scrolls the page as normal,
      while a left/right drag paints across the days. */
@@ -285,7 +425,8 @@ body.checking-login main {
   text-align: center;
   font-weight: 600;
   font-size: 0.85rem;
-  padding-bottom: 6px;
+  color: var(--color-heading);
+  padding-bottom: 8px;
 }
 
 .day-short {
@@ -293,23 +434,26 @@ body.checking-login main {
 }
 
 .grid-time {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 500;
   color: var(--color-text-muted);
   text-align: right;
-  padding-right: 8px;
+  padding-right: 10px;
   white-space: nowrap;
-  transform: translateY(-0.5em); /* line the label up with the hour line */
+  transform: translateY(-0.55em); /* line the label up with the hour line */
 }
 
 .slot {
-  height: 22px;
+  height: 24px;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   background: var(--color-free);
   cursor: pointer;
   padding: 0;
   position: relative;
-  transition: background-color 0.15s ease, transform 0.1s ease;
+  font-family: inherit;
+  transition: background-color var(--transition), box-shadow var(--transition),
+    transform var(--transition);
 }
 
 .slot.on-the-hour {
@@ -317,19 +461,86 @@ body.checking-login main {
 }
 
 .slot:hover {
-  filter: brightness(0.95);
+  transform: scale(1.06);
+  z-index: 1;
 }
 
 .slot:focus-visible {
   outline: 2px solid var(--color-brand);
   outline-offset: 1px;
+  z-index: 2;
+}
+
+/* ===================== 7. Employee availability page ===================== */
+
+.mode-toggle {
+  display: grid;
+  gap: 8px;
+}
+
+.mode-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: white;
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--transition), background-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.mode-button:hover {
+  border-color: var(--color-brand-sky);
+}
+
+.mode-button.active {
+  border-color: var(--color-brand);
+  background: var(--color-brand-light);
+  box-shadow: inset 0 0 0 1px var(--color-brand);
+  color: var(--color-heading);
+  font-weight: 600;
+}
+
+/* A check mark on the active mode, so it isn't shown by color alone */
+.mode-button.active::after {
+  content: "✓";
+  margin-left: auto;
+  color: var(--color-brand);
+  font-weight: 700;
+}
+
+.actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.slot:hover:not([data-state="preferred"]):not([data-state="conflict"]) {
+  background: var(--color-free-hover);
 }
 
 .slot[data-state="preferred"] {
   background: var(--color-preferred);
 }
 
-/* A small ✕ on conflict slots, in addition to the stripes */
+/* Conflicts use stripes and an ✕, not just color, so they're clear for everyone */
+.swatch-conflict,
+.slot[data-state="conflict"] {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-conflict),
+    var(--color-conflict) 4px,
+    var(--color-conflict-dark) 4px,
+    var(--color-conflict-dark) 8px
+  );
+  border-color: var(--color-conflict-dark);
+}
+
 .slot[data-state="conflict"]::after {
   content: "✕";
   position: absolute;
@@ -341,171 +552,23 @@ body.checking-login main {
   font-weight: 700;
 }
 
-/* ---------- Phones ---------- */
-
-@media (max-width: 760px) {
-  .availability-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .day-long {
-    display: none;
-  }
-
-  .nav-inner {
-    flex-wrap: wrap;
-    gap: 8px 16px;
-  }
-
-  .nav-links {
-    order: 3; /* links move to their own row under the logo and Log out */
-    flex-basis: 100%;
-  }
-
-  .nav-user {
-    margin-left: auto;
-  }
-
-  .nav-name {
-    display: none;
-  }
-
-  .day-short {
-    display: inline;
-  }
-
-  .grid {
-    grid-template-columns: 3.6rem repeat(var(--day-count), minmax(2rem, 1fr));
-  }
-
-  .grid-time {
-    font-size: 0.68rem;
-    padding-right: 4px;
-  }
-
-  .card {
-    padding: 12px;
-  }
+/* A quick "pop" when a slot is painted or cleared */
+.slot.pop {
+  animation: slot-pop 0.22s ease;
 }
 
-/* ---------- Login page ---------- */
-
-.auth-page {
-  min-height: 100vh;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 32px 16px;
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 40px;
-  align-items: center;
+@keyframes slot-pop {
+  0% { transform: scale(0.82); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
-.brand-name {
-  margin: 0 0 8px;
-  font-weight: 700;
-  color: var(--color-brand);
-}
-
-.auth-intro h1 {
-  margin: 0 0 12px;
-  font-size: 2.2rem;
-  line-height: 1.2;
-}
-
-.auth-intro p:last-child {
-  color: var(--color-text-muted);
-  line-height: 1.5;
-}
-
-.auth-card {
-  padding: 24px;
-}
-
-.auth-form {
-  display: grid;
-  gap: 14px;
-}
-
-.auth-form[hidden] {
-  display: none;
-}
-
-.auth-form h2 {
-  margin: 0;
-}
-
-.auth-form label {
-  display: grid;
-  gap: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.auth-form input {
-  padding: 10px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  font: inherit;
-  font-weight: 400;
-}
-
-.auth-form input:focus {
-  outline: 2px solid var(--color-brand);
-  outline-offset: 1px;
-}
-
-.field-hint,
-.form-help,
-.switch-text {
-  font-weight: 400;
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
-.link-button {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  font-size: 0.85rem;
-  color: #1f6fb2;
-  cursor: pointer;
-  text-decoration: underline;
-  justify-self: start;
-}
-
-.auth-card .status {
-  margin-top: 12px;
-}
-
-@media (max-width: 760px) {
-  .auth-page {
-    grid-template-columns: 1fr;
-    gap: 24px;
-    align-content: start;
-  }
-
-  .auth-intro h1 {
-    font-size: 1.7rem;
-  }
-}
-
-/* ---------- Admin heatmap (Team overview) ---------- */
-
-:root {
-  /* Green shades from "a few people" (1) to "everyone" (4) */
-  --heat-1: #d9f2e3;
-  --heat-2: #9fd8b5;
-  --heat-3: #2f9a5e;
-  --heat-4: #17603a;
-}
+/* ===================== 8. Admin Team overview (heatmap) ===================== */
 
 #overview-grid .slot {
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--color-heading);
 }
 
 #overview-grid .slot[data-level="1"] { background: var(--heat-1); }
@@ -535,7 +598,8 @@ body.checking-login main {
 
 /* Legend swatches for the heatmap */
 .heat-scale {
-  width: 36px;
+  width: 40px;
+  border: none;
   background: linear-gradient(90deg, var(--heat-1), var(--heat-2), var(--heat-3), var(--heat-4));
 }
 
@@ -549,6 +613,8 @@ body.checking-login main {
 
 .swatch-number {
   background: var(--heat-2);
+  border-color: var(--heat-2);
+  color: var(--color-heading);
 }
 
 .swatch-has-conflict {
@@ -559,16 +625,48 @@ body.checking-login main {
 
 /* Best times list */
 .best-times {
+  list-style: none;
   margin: 0;
-  padding-left: 20px;
-  font-size: 0.9rem;
+  padding: 0;
   display: grid;
-  gap: 4px;
+  gap: 6px;
+  font-size: 0.88rem;
+  counter-reset: best;
+}
+
+.best-times li:not(.empty) {
+  counter-increment: best;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--color-brand-light);
+  border-radius: var(--radius-small);
+  color: var(--color-heading);
+  font-weight: 500;
+}
+
+.best-times li:not(.empty)::before {
+  content: counter(best);
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-brand);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.best-detail {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
 }
 
 .best-times .empty {
-  list-style: none;
-  margin-left: -20px;
   color: var(--color-text-muted);
 }
 
@@ -577,7 +675,7 @@ body.checking-login main {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .filter-count {
@@ -588,10 +686,10 @@ body.checking-login main {
 
 .employee-filter {
   list-style: none;
-  margin: 0 0 12px;
+  margin: 0;
   padding: 0;
   display: grid;
-  gap: 6px;
+  gap: 2px;
   max-height: 260px;
   overflow-y: auto;
 }
@@ -599,9 +697,16 @@ body.checking-login main {
 .employee-filter label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
   font-size: 0.9rem;
   cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.employee-filter label:hover {
+  background: var(--color-page-bg);
 }
 
 .employee-filter input {
@@ -620,14 +725,20 @@ body.checking-login main {
 .slot-details {
   position: fixed;
   z-index: 10;
-  width: 240px;
-  padding: 12px;
+  width: 250px;
+  padding: 14px;
   background: white;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(27, 42, 65, 0.15);
+  box-shadow: var(--shadow-raised);
   font-size: 0.85rem;
   pointer-events: none; /* so it never blocks the mouse from reaching slots */
+  animation: popup-in 0.12s ease;
+}
+
+@keyframes popup-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .slot-details[hidden] {
@@ -635,18 +746,23 @@ body.checking-login main {
 }
 
 .details-title {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-weight: 700;
+  color: var(--color-heading);
 }
 
 .details-section {
-  padding-left: 8px;
+  padding-left: 10px;
   border-left: 3px solid var(--color-border);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .details-section:last-child {
   margin-bottom: 0;
+}
+
+.details-section strong {
+  color: var(--color-heading);
 }
 
 .details-section p {
@@ -657,3 +773,249 @@ body.checking-login main {
 .details-section.is-preferred { border-color: var(--color-preferred); }
 .details-section.is-free { border-color: #b8c4d4; }
 .details-section.is-conflict { border-color: var(--color-conflict); }
+
+/* ===================== 9. Login page ===================== */
+
+.auth-body {
+  /* Soft sky-blue glow behind the login page */
+  background:
+    radial-gradient(circle at 15% 20%, rgba(124, 192, 240, 0.28), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(31, 120, 193, 0.12), transparent 50%),
+    var(--color-page-bg);
+}
+
+.auth-page {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 48px 16px;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 56px;
+  align-items: center;
+}
+
+.auth-intro .brand {
+  margin-bottom: 28px;
+  font-size: 1.3rem;
+}
+
+.auth-intro .brand .logo-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.auth-intro h1 {
+  margin: 0 0 16px;
+  font-size: 2.8rem;
+  line-height: 1.1;
+}
+
+.auth-intro h1 span {
+  color: var(--color-brand);
+}
+
+.auth-tagline {
+  margin: 0 0 28px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.feature-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--color-text);
+  line-height: 1.45;
+}
+
+.feature-list strong {
+  color: var(--color-heading);
+}
+
+.feature-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: white;
+  box-shadow: var(--shadow-card);
+  font-size: 1rem;
+}
+
+.auth-card {
+  padding: 32px;
+  box-shadow: var(--shadow-raised);
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-form[hidden] {
+  display: none;
+}
+
+.auth-form h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.auth-form input {
+  padding: 11px 13px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  font: inherit;
+  font-weight: 400;
+  color: var(--color-text);
+  background: #fbfdff;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.auth-form input:hover {
+  border-color: var(--color-brand-sky);
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(31, 120, 193, 0.18);
+}
+
+.field-hint,
+.form-help,
+.switch-text {
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.auth-card .status {
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-radius: var(--radius-small);
+  background: var(--color-page-bg);
+}
+
+/* ===================== 10. Phones and small screens ===================== */
+
+@media (max-width: 900px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-top: 32px;
+    max-width: 520px;
+  }
+
+  .auth-intro h1 {
+    font-size: 2.1rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 20px 12px;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .availability-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .nav-inner {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .nav-links {
+    order: 3; /* links move to their own row under the logo and Log out */
+    flex-basis: 100%;
+  }
+
+  .nav-user {
+    margin-left: auto;
+  }
+
+  .nav-name {
+    display: none;
+  }
+
+  .day-long {
+    display: none;
+  }
+
+  .day-short {
+    display: inline;
+  }
+
+  .grid {
+    grid-template-columns: 3.6rem repeat(var(--day-count), minmax(2rem, 1fr));
+    gap: 2px;
+  }
+
+  .grid-time {
+    font-size: 0.66rem;
+    padding-right: 4px;
+  }
+
+  .slot:hover {
+    transform: none; /* no hover zoom on touch screens */
+  }
+
+  .auth-card {
+    padding: 22px;
+  }
+
+  .auth-intro .brand {
+    margin-bottom: 18px;
+  }
+
+  .auth-intro h1 {
+    font-size: 1.8rem;
+  }
+}
+
+/* ===================== 11. Reduced motion ===================== */
+/* Respect people who turn off animations in their device settings */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .slot:hover {
+    transform: none;
+  }
+}

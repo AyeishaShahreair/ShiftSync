@@ -13,6 +13,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { auth } from "./firebase.js";
 import { createUserProfile } from "./database.js";
+import { renderFooter } from "./layout.js";
+
+renderFooter();
 
 const HOME_PAGE = "availability.html";
 

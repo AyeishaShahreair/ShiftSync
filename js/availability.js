@@ -8,7 +8,7 @@ import { scheduleSettings, SLOT_STATES } from "./config.js";
 import { createGrid } from "./grid.js";
 import { loadAvailability, saveAvailability } from "./database.js";
 import { requireLogin } from "./auth.js";
-import { renderNav } from "./layout.js";
+import { renderNav, renderFooter } from "./layout.js";
 
 // The logged-in user's id. Set when the page starts (see start() at the bottom).
 let userId = null;
@@ -74,6 +74,14 @@ function setState(key, state) {
   slot.setAttribute("aria-label", `${slot.dataset.label}: ${state}`);
 }
 
+// Play a quick "pop" animation on a slot (see .slot.pop in the CSS).
+function animate(key) {
+  const slot = slots.get(key);
+  slot.classList.remove("pop");
+  void slot.offsetWidth; // forces the browser to restart the animation
+  slot.classList.add("pop");
+}
+
 // Clicking a slot that already has the current color clears it;
 // otherwise it gets painted with the current color.
 function stateAfterClick(key) {
@@ -97,6 +105,7 @@ gridContainer.addEventListener("pointerdown", (event) => {
   // The first slot decides what the whole drag does: paint or erase.
   dragState = stateAfterClick(slot.dataset.key);
   setState(slot.dataset.key, dragState);
+  animate(slot.dataset.key);
   markUnsaved();
 });
 
@@ -105,6 +114,7 @@ gridContainer.addEventListener("pointermove", (event) => {
   const slot = slotAtPoint(event.clientX, event.clientY);
   if (slot && getState(slot.dataset.key) !== dragState) {
     setState(slot.dataset.key, dragState);
+    animate(slot.dataset.key);
     markUnsaved();
   }
 });
@@ -123,6 +133,7 @@ gridContainer.addEventListener("click", (event) => {
   const slot = event.target.closest(".slot");
   if (!slot || event.detail !== 0) return;
   setState(slot.dataset.key, stateAfterClick(slot.dataset.key));
+  animate(slot.dataset.key);
   markUnsaved();
 });
 
@@ -184,6 +195,7 @@ function showOnGrid(savedSlots) {
 }
 
 async function start() {
+  renderFooter();
   setMode(SLOT_STATES.PREFERRED);
   showOnGrid({});
   saveButton.disabled = true; // until we know who is logged in

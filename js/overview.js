@@ -7,10 +7,10 @@
 // -----------------------------------------------------------------------------
 
 import { scheduleSettings, SLOT_STATES } from "./config.js";
-import { createGrid } from "./grid.js";
+import { createGrid, getSlotTimes, slotKey, formatTime } from "./grid.js";
 import { loadAllUsers, loadAllAvailability } from "./database.js";
 import { requireLogin } from "./auth.js";
-import { renderNav } from "./layout.js";
+import { renderNav, renderFooter } from "./layout.js";
 
 // ---- Page state ----
 
@@ -70,31 +70,58 @@ function drawHeatmap() {
   drawBestTimes();
 }
 
-// List the top 3 times with the most people preferring them and nobody in conflict.
+// List the top 3 time ranges where the most people prefer to work and nobody
+// has a conflict. Back-to-back slots on the same day with the same number of
+// people are joined into one range, e.g. "Wednesday 11:00 AM – 1:00 PM".
 function drawBestTimes() {
-  const candidates = [];
-  for (const [key, slot] of slots) {
-    const groups = groupPeople(key);
-    if (groups.preferred.length > 0 && groups.conflict.length === 0) {
-      candidates.push({ label: slot.dataset.label, count: groups.preferred.length });
-    }
+  const times = getSlotTimes(scheduleSettings);
+  const ranges = [];
+
+  for (const day of scheduleSettings.days) {
+    let current = null; // the range we're currently building for this day
+    times.forEach((time, index) => {
+      const groups = groupPeople(slotKey(day.key, time));
+      const count = groups.conflict.length === 0 ? groups.preferred.length : 0;
+
+      if (count > 0 && current && current.count === count) {
+        current.endIndex = index; // same number of people: make the range longer
+      } else {
+        current = count > 0 ? { day, count, startIndex: index, endIndex: index } : null;
+        if (current) ranges.push(current);
+      }
+    });
   }
-  // Most people first. (Ties keep grid order: earlier in the week comes first.)
-  candidates.sort((a, b) => b.count - a.count);
+
+  // Most people first; for a tie, the longer range first.
+  ranges.sort((a, b) => b.count - a.count || (b.endIndex - b.startIndex) - (a.endIndex - a.startIndex));
 
   bestTimesList.innerHTML = "";
-  if (candidates.length === 0) {
+  if (ranges.length === 0) {
     const text = selectedIds.size === 0
       ? "Select at least one employee below."
       : "No preferred times without conflicts yet.";
     bestTimesList.innerHTML = `<li class="empty">${text}</li>`;
     return;
   }
-  for (const { label, count } of candidates.slice(0, 3)) {
+
+  for (const range of ranges.slice(0, 3)) {
+    const start = formatTime(times[range.startIndex]);
+    const end = formatTime(slotEndTime(times[range.endIndex]));
+    const people = `${range.count} ${range.count === 1 ? "person" : "people"}`;
+
     const item = document.createElement("li");
-    item.textContent = `${label} · ${count} ${count === 1 ? "person" : "people"}`;
+    item.innerHTML = `<span><strong></strong><br><span class="best-detail"></span></span>`;
+    item.querySelector("strong").textContent = range.day.label;
+    item.querySelector(".best-detail").textContent = `${start} – ${end} · ${people}`;
     bestTimesList.appendChild(item);
   }
+}
+
+// When does a slot end? "11:30" -> "12:00" (start time + slot length).
+function slotEndTime(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+  const total = hours * 60 + minutes + scheduleSettings.slotMinutes;
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
 }
 
 // Build the checkbox list of employees.
@@ -224,6 +251,8 @@ document.addEventListener("keydown", (event) => {
 // ---- Start up ----
 
 async function start() {
+  renderFooter();
+
   // Only admins may see this page; everyone else is sent back to their own grid.
   const { profile } = await requireLogin({ adminOnly: true });
   renderNav(profile);

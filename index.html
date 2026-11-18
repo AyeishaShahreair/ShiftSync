@@ -4,14 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ShiftSync · Log in</title>
+  <!-- Inter font from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="img/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="auth-body">
   <main class="auth-page">
     <div class="auth-intro">
-      <p class="brand-name">ShiftSync</p>
-      <h1>Everyone's schedule, in sync.</h1>
-      <p>Mark your weekly availability in a few clicks. Your manager sees the whole team's best times at a glance.</p>
+      <p class="brand">
+        <img class="logo-icon" src="img/logo.svg" alt="">
+        <span>ShiftSync</span>
+      </p>
+      <h1>Everyone's schedule, <span>in sync.</span></h1>
+      <p class="auth-tagline">
+        Mark your weekly availability in a few clicks. Your manager sees the
+        whole team's best times at a glance.
+      </p>
+      <ul class="feature-list">
+        <li>
+          <span class="feature-icon" aria-hidden="true">🖌️</span>
+          <span><strong>Paint your week.</strong> Click or drag to mark preferred times and conflicts.</span>
+        </li>
+        <li>
+          <span class="feature-icon" aria-hidden="true">📊</span>
+          <span><strong>See the best times.</strong> A team heatmap shows where schedules overlap.</span>
+        </li>
+        <li>
+          <span class="feature-icon" aria-hidden="true">🔒</span>
+          <span><strong>Private by design.</strong> Only you and your admin can see your availability.</span>
+        </li>
+      </ul>
     </div>
 
     <section class="card auth-card">
@@ -76,6 +101,9 @@
       <p id="auth-message" class="status" aria-live="polite"></p>
     </section>
   </main>
+
+  <!-- The footer is drawn here by js/layout.js -->
+  <footer id="site-footer" class="site-footer"></footer>
 
   <script type="module" src="js/login.js"></script>
 </body>
