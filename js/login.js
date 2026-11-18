@@ -28,6 +28,14 @@ let isSigningUp = false;
 
 // ---- Helpers ----
 
+// Go to the availability page (only once, even if two things ask at the same time).
+let isLeaving = false;
+function goHome() {
+  if (isLeaving) return;
+  isLeaving = true;
+  window.location.href = HOME_PAGE;
+}
+
 function showMessage(text, type = "") {
   message.textContent = text;
   message.dataset.type = type;
@@ -82,7 +90,7 @@ forms.login.addEventListener("submit", async (event) => {
   showMessage("Logging in…");
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = HOME_PAGE;
+    goHome();
   } catch (error) {
     showMessage(friendlyError(error), "error");
     setBusy(forms.login, false);
@@ -112,7 +120,7 @@ forms.signup.addEventListener("submit", async (event) => {
     await updateProfile(user, { displayName: name });
     // 3. ...and create their profile in the database (everyone starts as "employee").
     await createUserProfile(user.uid, name, email);
-    window.location.href = HOME_PAGE;
+    goHome();
   } catch (error) {
     console.error(error);
     isSigningUp = false;
@@ -143,6 +151,6 @@ forms.reset.addEventListener("submit", async (event) => {
 // Firebase remembers who is logged in, even after closing the browser.
 onAuthStateChanged(auth, (user) => {
   if (user && !isSigningUp) {
-    window.location.href = HOME_PAGE;
+    goHome();
   }
 });

@@ -6,11 +6,12 @@
 
 import { scheduleSettings, SLOT_STATES } from "./config.js";
 import { createGrid } from "./grid.js";
-import { isFirebaseConfigured } from "./firebase.js";
 import { loadAvailability, saveAvailability } from "./database.js";
+import { requireLogin } from "./auth.js";
+import { renderNav } from "./layout.js";
 
-// TEMPORARY: until login is added in Step 3, everyone saves to this test user.
-const userId = "test-user";
+// The logged-in user's id. Set when the page starts (see start() at the bottom).
+let userId = null;
 
 // ---- Page state ----
 
@@ -185,20 +186,21 @@ function showOnGrid(savedSlots) {
 async function start() {
   setMode(SLOT_STATES.PREFERRED);
   showOnGrid({});
+  saveButton.disabled = true; // until we know who is logged in
 
-  if (!isFirebaseConfigured) {
-    saveButton.disabled = true;
-    showStatus("Firebase isn't set up yet. Add your config to js/firebase.js.", "error");
-    return;
-  }
+  // Not logged in? requireLogin sends them to the login page.
+  const { user, profile } = await requireLogin();
+  userId = user.uid;
+  renderNav(profile);
 
   showStatus("Loading your availability…");
   try {
     showOnGrid(await loadAvailability(userId));
     showStatus("");
+    saveButton.disabled = false;
   } catch (error) {
     console.error(error);
-    showStatus("Couldn't load your saved availability.", "error");
+    showStatus("Couldn't load your saved availability. Try refreshing the page.", "error");
   }
 }
 

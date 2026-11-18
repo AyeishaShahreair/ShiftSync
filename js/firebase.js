@@ -24,9 +24,6 @@ const firebaseConfig = {
   appId: "1:748917996592:web:6a676c73f4630e07e981f5",
 };
 
-// True once real values are filled in above (false while they still say "PASTE...").
-export const isFirebaseConfigured = !firebaseConfig.apiKey.startsWith("PASTE");
-
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
