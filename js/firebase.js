@@ -13,17 +13,17 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 👉 Paste your own values here (Firebase console → Project settings → Your apps).
+// Your Firebase project's config (from Firebase console → Project settings → Your apps).
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID",
+  apiKey: "AIzaSyD9IPh1ZRbKLqKjwXIguRPi8ixkW4rjVoM",
+  authDomain: "shiftsync-99427.firebaseapp.com",
+  projectId: "shiftsync-99427",
+  storageBucket: "shiftsync-99427.firebasestorage.app",
+  messagingSenderId: "748917996592",
+  appId: "1:748917996592:web:6a676c73f4630e07e981f5",
 };
 
-// True once the placeholder values above have been replaced with real ones.
+// True once real values are filled in above (false while they still say "PASTE...").
 export const isFirebaseConfigured = !firebaseConfig.apiKey.startsWith("PASTE");
 
 const app = initializeApp(firebaseConfig);
