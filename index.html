@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShiftSync · Log in</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="auth-page">
+    <div class="auth-intro">
+      <p class="brand-name">ShiftSync</p>
+      <h1>Everyone's schedule, in sync.</h1>
+      <p>Mark your weekly availability in a few clicks. Your manager sees the whole team's best times at a glance.</p>
+    </div>
+
+    <section class="card auth-card">
+      <!-- Only one of these three forms is shown at a time (see js/login.js). -->
+
+      <!-- 1. Log in -->
+      <form id="login-form" class="auth-form" novalidate>
+        <h2>Log in</h2>
+        <label>
+          Email
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+        <label>
+          Password
+          <input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="button button-primary">Log in</button>
+        <button type="button" class="link-button" data-show="reset-form">Forgot password?</button>
+        <p class="switch-text">
+          New to ShiftSync?
+          <button type="button" class="link-button" data-show="signup-form">Create an account</button>
+        </p>
+      </form>
+
+      <!-- 2. Sign up -->
+      <form id="signup-form" class="auth-form" novalidate hidden>
+        <h2>Create an account</h2>
+        <label>
+          Full name
+          <input type="text" name="name" autocomplete="name" maxlength="60" required>
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+        <label>
+          Password <span class="field-hint">(at least 6 characters)</span>
+          <input type="password" name="password" autocomplete="new-password" minlength="6" required>
+        </label>
+        <button type="submit" class="button button-primary">Create account</button>
+        <p class="switch-text">
+          Already have an account?
+          <button type="button" class="link-button" data-show="login-form">Log in</button>
+        </p>
+      </form>
+
+      <!-- 3. Forgot password -->
+      <form id="reset-form" class="auth-form" novalidate hidden>
+        <h2>Reset your password</h2>
+        <p class="form-help">Enter your email and we'll send you a link to choose a new password.</p>
+        <label>
+          Email
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+        <button type="submit" class="button button-primary">Send reset link</button>
+        <p class="switch-text">
+          <button type="button" class="link-button" data-show="login-form">Back to log in</button>
+        </p>
+      </form>
+
+      <!-- Messages (errors, "link sent", etc.). aria-live reads them to screen readers. -->
+      <p id="auth-message" class="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>

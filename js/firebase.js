@@ -1,8 +1,8 @@
 // firebase.js
 // -----------------------------------------------------------------------------
 // Connects ShiftSync to your Firebase project.
-// Every other file imports `db` (the database) from here, so the connection
-// is set up in exactly one place.
+// Every other file imports `db` (the database) and `auth` (login) from here,
+// so the connection is set up in exactly one place.
 //
 // It's safe for this config to be public on GitHub: it only says *which*
 // project to talk to. What people are allowed to read or write is controlled
@@ -12,6 +12,7 @@
 // We load Firebase straight from Google's CDN, so there's nothing to install.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // Your Firebase project's config (from Firebase console → Project settings → Your apps).
 const firebaseConfig = {
@@ -28,3 +29,4 @@ export const isFirebaseConfigured = !firebaseConfig.apiKey.startsWith("PASTE");
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);

@@ -5,11 +5,51 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // TEMPORARY (Step 2): only the shared "test-user" document can be used,
-    // so we can test saving before login exists. Step 3 replaces this with
-    // real per-user rules.
-    match /availability/test-user {
-      allow read, write: if true;
+    // ---- Helper functions ----
+
+    // Is someone logged in?
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Is the logged-in person the owner of this document?
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Is the logged-in person an admin? (Looks up their role in the users collection.)
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    // ---- users/{userId}: name, email, role ----
+    match /users/{userId} {
+      // You can see your own profile; admins can see everyone's.
+      allow read: if isOwner(userId) || isAdmin();
+
+      // You can create only your own profile, and it must start as an employee.
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(["name", "email", "role", "createdAt"])
+        && request.resource.data.role == "employee"
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 60;
+
+      // Nobody can change roles from the app. Admins are made in the Firebase console.
+      allow update, delete: if false;
+    }
+
+    // ---- availability/{userId}: that person's saved slots ----
+    match /availability/{userId} {
+      // You can see your own availability; admins can see everyone's.
+      allow read: if isOwner(userId) || isAdmin();
+
+      // You can only save your own availability.
+      allow write: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(["slots", "updatedAt"])
+        && request.resource.data.slots is map;
     }
   }
 }
