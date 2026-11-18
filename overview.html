@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Overview · ShiftSync</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<!-- "checking-login" hides the page until we know who is logged in (js/auth.js) -->
+<body class="checking-login">
+  <nav id="top-nav" class="top-nav" aria-label="Main"></nav>
+
+  <main class="page">
+    <header class="page-header">
+      <h1>Team overview</h1>
+      <p>Everyone's availability, overlapped. Darker green means more people prefer that time.</p>
+    </header>
+
+    <div class="availability-layout">
+      <!-- Side panel: legend, best times, and employee filter -->
+      <aside class="card side-panel">
+        <h2>Legend</h2>
+        <ul class="legend">
+          <li><span class="swatch heat-scale" aria-hidden="true"></span> More people prefer → darker green</li>
+          <li><span class="swatch swatch-number" aria-hidden="true">3</span> Number of people who prefer it</li>
+          <li><span class="swatch swatch-has-conflict" aria-hidden="true">⚠</span> Someone can't work this time</li>
+        </ul>
+        <p class="hint">Hover over or tap a slot to see names.</p>
+
+        <h2>Best times</h2>
+        <ol id="best-times" class="best-times"></ol>
+
+        <h2 id="filter-heading">Show employees</h2>
+        <div class="filter-actions">
+          <button type="button" class="link-button" id="select-all">Select all</button>
+          <button type="button" class="link-button" id="select-none">Clear</button>
+          <span id="filter-count" class="filter-count"></span>
+        </div>
+        <ul id="employee-filter" class="employee-filter" aria-labelledby="filter-heading"></ul>
+
+        <p id="overview-status" class="status" aria-live="polite"></p>
+      </aside>
+
+      <!-- The heatmap grid is drawn here by js/grid.js -->
+      <section class="card grid-card">
+        <div id="overview-grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Popup with names, shown when hovering/tapping a slot -->
+  <div id="slot-details" class="slot-details" role="tooltip" hidden></div>
+
+  <script type="module" src="js/overview.js"></script>
+</body>
+</html>

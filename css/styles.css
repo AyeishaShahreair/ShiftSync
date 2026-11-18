@@ -491,3 +491,169 @@ body.checking-login main {
     font-size: 1.7rem;
   }
 }
+
+/* ---------- Admin heatmap (Team overview) ---------- */
+
+:root {
+  /* Green shades from "a few people" (1) to "everyone" (4) */
+  --heat-1: #d9f2e3;
+  --heat-2: #9fd8b5;
+  --heat-3: #2f9a5e;
+  --heat-4: #17603a;
+}
+
+#overview-grid .slot {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+#overview-grid .slot[data-level="1"] { background: var(--heat-1); }
+#overview-grid .slot[data-level="2"] { background: var(--heat-2); }
+#overview-grid .slot[data-level="3"] { background: var(--heat-3); color: white; }
+#overview-grid .slot[data-level="4"] { background: var(--heat-4); color: white; }
+
+/* Someone can't work: red outline plus a small ⚠ in the corner (not color alone) */
+#overview-grid .slot.has-conflict {
+  box-shadow: inset 0 0 0 2px var(--color-conflict);
+}
+
+#overview-grid .slot.has-conflict::after {
+  content: "⚠";
+  position: absolute;
+  top: -1px;
+  right: 2px;
+  font-size: 0.6rem;
+  color: var(--color-conflict);
+}
+
+/* Keep the warning icon readable on the dark greens */
+#overview-grid .slot.has-conflict[data-level="3"]::after,
+#overview-grid .slot.has-conflict[data-level="4"]::after {
+  color: #ffd6d6;
+}
+
+/* Legend swatches for the heatmap */
+.heat-scale {
+  width: 36px;
+  background: linear-gradient(90deg, var(--heat-1), var(--heat-2), var(--heat-3), var(--heat-4));
+}
+
+.swatch-number,
+.swatch-has-conflict {
+  display: inline-grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.swatch-number {
+  background: var(--heat-2);
+}
+
+.swatch-has-conflict {
+  background: white;
+  border: 2px solid var(--color-conflict);
+  color: var(--color-conflict);
+}
+
+/* Best times list */
+.best-times {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  display: grid;
+  gap: 4px;
+}
+
+.best-times .empty {
+  list-style: none;
+  margin-left: -20px;
+  color: var(--color-text-muted);
+}
+
+/* Employee filter */
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.filter-count {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.employee-filter {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.employee-filter label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.employee-filter input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-brand);
+}
+
+.not-saved {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* The names popup */
+.slot-details {
+  position: fixed;
+  z-index: 10;
+  width: 240px;
+  padding: 12px;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(27, 42, 65, 0.15);
+  font-size: 0.85rem;
+  pointer-events: none; /* so it never blocks the mouse from reaching slots */
+}
+
+.slot-details[hidden] {
+  display: none;
+}
+
+.details-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.details-section {
+  padding-left: 8px;
+  border-left: 3px solid var(--color-border);
+  margin-bottom: 8px;
+}
+
+.details-section:last-child {
+  margin-bottom: 0;
+}
+
+.details-section p {
+  margin: 2px 0 0;
+  color: var(--color-text-muted);
+}
+
+.details-section.is-preferred { border-color: var(--color-preferred); }
+.details-section.is-free { border-color: #b8c4d4; }
+.details-section.is-conflict { border-color: var(--color-conflict); }

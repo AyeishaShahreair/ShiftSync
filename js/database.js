@@ -15,8 +15,10 @@
 // -----------------------------------------------------------------------------
 
 import {
+  collection,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -44,6 +46,24 @@ export async function getUserProfile(userId) {
 export async function loadAvailability(userId) {
   const snapshot = await getDoc(doc(db, "availability", userId));
   return snapshot.exists() ? snapshot.data().slots || {} : {};
+}
+
+// ---- Admin only (the security rules block these for everyone else) ----
+
+// Load every user's profile. Returns a list like [{ id, name, email, role }, ...].
+export async function loadAllUsers() {
+  const snapshot = await getDocs(collection(db, "users"));
+  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+// Load everyone's saved slots. Returns { userId: { "mon-09:00": "preferred", ... }, ... }.
+export async function loadAllAvailability() {
+  const snapshot = await getDocs(collection(db, "availability"));
+  const result = {};
+  for (const d of snapshot.docs) {
+    result[d.id] = d.data().slots || {};
+  }
+  return result;
 }
 
 // Save one person's slots, replacing whatever was saved before.
